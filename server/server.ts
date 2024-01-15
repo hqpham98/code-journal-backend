@@ -13,6 +13,17 @@ const db = new pg.Pool({
 
 const app = express();
 
+app.get('/api/entries/', async (req, res) => {
+  try {
+    const sql = `
+    SELECT * from "entries"`;
+    const result = await db.query(sql);
+    res.send(result.rows);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 app.listen(process.env.PORT, () => {
   console.log(`express server listening on port ${process.env.PORT}`);
 });
