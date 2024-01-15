@@ -7,14 +7,21 @@ import { Entry, addEntry, removeEntry, updateEntry } from './data';
  * If `entry` is defined, edits that entry.
  */
 type Props = {
+  entries: Entry[];
   entry: Entry | null;
   onSubmit: () => void;
 };
-export default function EntryForm({ entry, onSubmit }: Props) {
+export default function EntryForm({ entries, entry, onSubmit }: Props) {
   const [title, setTitle] = useState(entry?.title ?? '');
   const [photoUrl, setPhotoUrl] = useState(entry?.photoUrl ?? '');
   const [notes, setNotes] = useState(entry?.notes ?? '');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  function addEntry() {}
+
+  function removeEntry() {}
+
+  function updateEntry() {}
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();

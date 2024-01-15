@@ -12,11 +12,6 @@ let data = {
   nextEntryId: 1,
 };
 
-window.addEventListener('beforeunload', function () {
-  const dataJSON = JSON.stringify(data);
-  localStorage.setItem('code-journal-data', dataJSON);
-});
-
 const localData = localStorage.getItem('code-journal-data');
 if (localData) {
   data = JSON.parse(localData);
