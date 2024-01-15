@@ -51,7 +51,7 @@ app.post('/api/entries/', async (req, res, next) => {
         'photoUrl' in req.body
       )
     ) {
-      throw Error('Error 400, Bad Request');
+      throw new ClientError(400, '"gradeId" must be a positive integer');
     }
     const sql = `
     INSERT INTO "entries" ("title", "notes", "photoUrl")
@@ -67,9 +67,57 @@ app.post('/api/entries/', async (req, res, next) => {
     next(err);
   }
 });
-app.listen(process.env.PORT, () => {
-  console.log(`express server listening on port ${process.env.PORT}`);
+
+app.put('/api/entries/:entryId', async (req, res, next) => {
+  try {
+    const entryId = Number(req.params.entryId);
+
+    if (!Number.isInteger(entryId) || entryId <= 0 || Number.isNaN(entryId)) {
+      throw new ClientError(400, '"gradeId" must be a positive integer');
+    }
+    const { title, notes, photoUrl } = req.body;
+
+    const sql = `
+      UPDATE "entries"
+      SET "title" = $1,
+          "notes" = $2,
+          "photoUrl" = $3
+    WHERE "entryId" = $4
+    RETURNING *
+    `;
+
+    const params = [title, notes, photoUrl, entryId];
+    const result = await db.query(sql, params);
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
 });
+
+app.delete('/api/entries/:entryId', async (req, res, next) => {
+  try {
+    // error handling
+
+    const entryId = Number(req.params.entryId);
+    if (!Number.isInteger(entryId) || entryId <= 0) {
+      throw new ClientError(400, '"entryId" must be a positive integer');
+    }
+
+    const sql = `
+      delete from "entries"
+        where "entryId" = $1
+        returning *;
+    `;
+    const params = [entryId];
+    const result = await db.query(sql, params);
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.use(errorMiddleware);
+
 app.listen(process.env.PORT, () => {
   console.log(`express server listening on port ${process.env.PORT}`);
 });
