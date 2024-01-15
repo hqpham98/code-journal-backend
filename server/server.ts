@@ -70,3 +70,6 @@ app.post('/api/entries/', async (req, res, next) => {
 app.listen(process.env.PORT, () => {
   console.log(`express server listening on port ${process.env.PORT}`);
 });
+app.listen(process.env.PORT, () => {
+  console.log(`express server listening on port ${process.env.PORT}`);
+});
