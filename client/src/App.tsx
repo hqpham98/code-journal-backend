@@ -11,6 +11,7 @@ export default function App() {
    * null - creating a new entry
    * defined - the entry being edited
    */
+
   const [editing, setEditing] = useState<Entry | null | undefined>();
 
   return (

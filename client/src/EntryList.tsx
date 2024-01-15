@@ -1,12 +1,45 @@
 import { FaPencilAlt } from 'react-icons/fa';
-import { Entry, readEntries } from './data';
+import { Entry } from './data';
+import { useState, useEffect } from 'react';
 
 type Props = {
   onCreate: () => void;
   onEdit: (entry: Entry) => void;
 };
+
 export default function EntryList({ onCreate, onEdit }: Props) {
-  const entries = readEntries();
+  const [entries, setEntries] = useState<Entry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<unknown>();
+
+  useEffect(() => {
+    async function getEntries() {
+      try {
+        const res = await fetch('/api/entries/');
+        if (!res.ok) {
+          throw Error(`Response Code: ${res.status}`);
+        }
+        setEntries(await res.json());
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    getEntries();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    console.error('Fetch error:', error);
+    return (
+      <div>
+        Error! {error instanceof Error ? error.message : 'Unknown error'}
+      </div>
+    );
+  }
   return (
     <div className="container">
       <div className="row">
@@ -25,7 +58,7 @@ export default function EntryList({ onCreate, onEdit }: Props) {
       <div className="row">
         <div className="column-full">
           <ul className="entry-ul">
-            {entries.map((entry) => (
+            {entries?.map((entry) => (
               <EntryCard key={entry.entryId} entry={entry} onEdit={onEdit} />
             ))}
           </ul>

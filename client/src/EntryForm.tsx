@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Entry, addEntry, removeEntry, updateEntry } from './data';
+import { Entry, UnsavedEntry } from './data';
 
 /**
  * Form that adds or edits an entry.
@@ -15,6 +15,43 @@ export default function EntryForm({ entry, onSubmit }: Props) {
   const [photoUrl, setPhotoUrl] = useState(entry?.photoUrl ?? '');
   const [notes, setNotes] = useState(entry?.notes ?? '');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  async function addEntry(newEntry: UnsavedEntry) {
+    try {
+      const res = await fetch('/api/entries/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEntry),
+      });
+      if (!res.ok) throw Error(`Error, Response Code : ${res.status}`);
+    } catch (err) {
+      alert(`Error: ${err}`);
+    }
+  }
+
+  async function removeEntry(entryId: number) {
+    try {
+      const res = await fetch(`/api/entries/${entryId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw Error(`Error, Response Code : ${res.status}`);
+    } catch (err) {
+      alert(`Error: ${err}`);
+    }
+  }
+
+  async function updateEntry(newEntry: Entry) {
+    try {
+      const res = await fetch(`/api/entries/${newEntry.entryId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEntry),
+      });
+      if (!res.ok) throw Error(`Error, Response Code : ${res.status}`);
+    } catch (err) {
+      alert(`Error: ${err}`);
+    }
+  }
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();

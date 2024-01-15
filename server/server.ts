@@ -19,7 +19,8 @@ app.use(express.json());
 app.get('/api/entries/', async (req, res) => {
   try {
     const sql = `
-    SELECT * from "entries"`;
+    SELECT * from "entries"
+    ORDER BY "entryId" DESC`;
     const result = await db.query(sql);
     res.json(result.rows);
   } catch (err) {
@@ -96,8 +97,6 @@ app.put('/api/entries/:entryId', async (req, res, next) => {
 
 app.delete('/api/entries/:entryId', async (req, res, next) => {
   try {
-    // error handling
-
     const entryId = Number(req.params.entryId);
     if (!Number.isInteger(entryId) || entryId <= 0) {
       throw new ClientError(400, '"entryId" must be a positive integer');
